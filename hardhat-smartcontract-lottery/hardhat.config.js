@@ -1,6 +1,17 @@
+// code adjustments according to
+// https://github.com/PatrickAlphaC/hardhat-smartcontract-lottery-fcc/blob/main/hardhat.config.js
+require("@nomiclabs/hardhat-waffle")
+require("@nomiclabs/hardhat-etherscan")
+require("hardhat-deploy")
+require("solidity-coverage")
+require("hardhat-gas-reporter")
+require("hardhat-contract-sizer")
+require("dotenv").config()
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
+
 module.exports = {
-  solidity: "0.7.3",
+  solidity: "0.8.7",
 };
