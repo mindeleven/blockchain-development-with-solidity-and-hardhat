@@ -10,6 +10,11 @@ pragma solidity ^0.8.7;
 // (1) random number -> Chainlink Oracle, Randomness
 // (2) automated execution -> Chainlink Keepers
 
+// subscription for Chainlink Verifiable Randomness Function
+// at https://vrf.chain.link/ (log in to MetaMask first)
+
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+
 error Raffle__NotEnoughETHEntered();
 
 contract Raffle {
@@ -17,7 +22,7 @@ contract Raffle {
     /*** state variables ***/
     // set minimum price to enter enterRaffle
     // storage variable, immutable, therefore naming with i_
-    // setting a variable as immutable saves gas 
+    // setting a variable as immutable saves gas
     // should be setable in constructor
     uint256 private immutable i_entranceFee;
 
@@ -53,8 +58,22 @@ contract Raffle {
     }
 
     // (2) Pick a random winner (verifiable random)
-    //function pickRandomWinner() {}
+    // is run by the chainlink keepers network
+    // external functions are cheaper than public functions
+    function requestRandomWinner() external {
+        // (1) request the random number
+        // (2) do something with the random number
+        // it's a two transaction process that has the advantage
+        // of preventing brute force attacks from manipulating the lottery
+    }
 
+    function fulfillRandomWords() internal  {
+        // override
+        // fulfillRandomWords basically means fulfilling random numbers
+
+    }
+
+    /* View / Pure functions */
     // all users should be able to see the entrance fee
     function getEntranceFee() public view returns(uint256) {
         return i_entranceFee;
