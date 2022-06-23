@@ -13,11 +13,14 @@ pragma solidity ^0.8.7;
 // subscription for Chainlink Verifiable Randomness Function
 // at https://vrf.chain.link/ (log in to MetaMask first)
 
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
+import "hardhat/console.sol";
 
 error Raffle__NotEnoughETHEntered();
 
-contract Raffle {
+contract Raffle is VRFConsumerBaseV2 {
 
     /*** state variables ***/
     // set minimum price to enter enterRaffle
@@ -35,7 +38,7 @@ contract Raffle {
     // storage variable, therefore naming starts with s_
     address payable[] private s_players;
 
-    constructor(uint256 entranceFee) {
+    constructor(address vrfCoordinatorV2, uint256 entranceFee) VRFConsumerBaseV2(vrfCoordinatorV2) {
         i_entranceFee = entranceFee;
     }
 
@@ -67,10 +70,9 @@ contract Raffle {
         // of preventing brute force attacks from manipulating the lottery
     }
 
-    function fulfillRandomWords() internal  {
+    function fulfillRandomWords(uint256 requestId, uint256[] memory rendowWords) internal override {
         // override
         // fulfillRandomWords basically means fulfilling random numbers
-
     }
 
     /* View / Pure functions */
