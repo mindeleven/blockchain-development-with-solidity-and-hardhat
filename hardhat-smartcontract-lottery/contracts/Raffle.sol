@@ -28,18 +28,51 @@ contract Raffle is VRFConsumerBaseV2 {
     // setting a variable as immutable saves gas
     // should be setable in constructor
     uint256 private immutable i_entranceFee;
-
-    /*** Events ***/
-    // convention: name events with the function name reversed
-    event RuffleEnter(address indexed player);
-
     // list of all players who entered the lottery
     // needs to be payable beacuse the player who wins will get paid
     // storage variable, therefore naming starts with s_
     address payable[] private s_players;
+    // integrate VRFCoordinatorV2Interface
+    VRFCoordinatorV2Interface private immutable i_vfrCoordinator;
+    // from https://docs.chain.link/docs/get-a-random-number/
+    // bytes32 keyHash: The gas lane key hash value, which is the maximum gas price you 
+    // are willing to pay for a request in wei. It functions as an ID of the off-chain VRF job 
+    // that runs in response to requests
+    bytes32 private immutable i_gasLane;
+    // the subscription ID that this contract uses for funding requests
+    uint64 private immutable i_subscriptionId;
+    // uint16 requestConfirmations: How many confirmations the Chainlink node should wait 
+    // before responding. The longer the node waits, the more secure the random value is. 
+    // It must be greater than the minimumRequestBlockConfirmations limit on the coordinator 
+    // contract.
+    uint16 private constant REQUEST_CONFIRMATIONS = 3;
+    // uint32 callbackGasLimit: The limit for how much gas to use for the callback request to 
+    // your contract's fulfillRandomWords() function. It must be less than the maxGasLimit 
+    // limit on the coordinator contract.
+    uint32 private immutable i_callbackGasLimit;
+    // uint32 numWords: How many random values to request. If you can use several random 
+    // values in a single callback, you can reduce the amount of gas that you spend 
+    // per random value.
+    uint16 private constant NUM_WORDS = 1;
 
-    constructor(address vrfCoordinatorV2, uint256 entranceFee) VRFConsumerBaseV2(vrfCoordinatorV2) {
+    /*** Events ***/
+    // convention: name events with the function name reversed
+    event RuffleEnter(address indexed player);
+    event RequestedRaffleWinner(uint256 indexed requestId);
+
+
+    constructor(
+        address vrfCoordinatorV2, 
+        uint256 entranceFee,
+        bytes32 gasLane,
+        uint64 subscriptionId,
+        uint32 callbackGasLimit
+    ) VRFConsumerBaseV2(vrfCoordinatorV2) {
         i_entranceFee = entranceFee;
+        i_vfrCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
+        i_gasLane = gasLane;
+        i_subscriptionId = subscriptionId;
+        i_callbackGasLimit = callbackGasLimit;
     }
 
     // (1) Enter the lottery by paying some amount
@@ -68,9 +101,21 @@ contract Raffle is VRFConsumerBaseV2 {
         // (2) do something with the random number
         // it's a two transaction process that has the advantage
         // of preventing brute force attacks from manipulating the lottery
+        uint256 requestId = i_vfrCoordinator.requestRandomWords(
+            i_gasLane, //keyHash
+            i_subscriptionId,
+            REQUEST_CONFIRMATIONS,
+            i_callbackGasLimit,
+            NUM_WORDS
+        );
+
+        emit RequestedRaffleWinner(requestId);
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] memory rendowWords) internal override {
+    function fulfillRandomWords(
+      uint256 requestId, 
+      uint256[] memory rendowWords
+    ) internal override {
         // override
         // fulfillRandomWords basically means fulfilling random numbers
     }
