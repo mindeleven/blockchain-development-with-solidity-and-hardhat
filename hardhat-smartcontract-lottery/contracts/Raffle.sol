@@ -55,6 +55,9 @@ contract Raffle is VRFConsumerBaseV2 {
     // per random value.
     uint16 private constant NUM_WORDS = 1;
 
+    // Lottery Variables
+    address private s_recentWinner;
+
     /*** Events ***/
     // convention: name events with the function name reversed
     event RuffleEnter(address indexed player);
@@ -122,6 +125,7 @@ contract Raffle is VRFConsumerBaseV2 {
         // using modulo operator
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
+        s_recentWinner = recentWinner;
     }
 
     /* View / Pure functions */
