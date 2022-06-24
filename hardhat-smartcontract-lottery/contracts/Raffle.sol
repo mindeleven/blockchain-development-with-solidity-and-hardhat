@@ -114,10 +114,14 @@ contract Raffle is VRFConsumerBaseV2 {
 
     function fulfillRandomWords(
       uint256 requestId, 
-      uint256[] memory rendowWords
+      uint256[] memory randomWords
     ) internal override {
         // override
         // fulfillRandomWords basically means fulfilling random numbers
+        // to get winner we want to pick random enrty from array of winners
+        // using modulo operator
+        uint256 indexOfWinner = randomWords[0] % s_players.length;
+        address payable recentWinner = s_players[indexOfWinner];
     }
 
     /* View / Pure functions */
