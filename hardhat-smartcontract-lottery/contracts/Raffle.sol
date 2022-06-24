@@ -63,6 +63,7 @@ contract Raffle is VRFConsumerBaseV2 {
     // convention: name events with the function name reversed
     event RuffleEnter(address indexed player);
     event RequestedRaffleWinner(uint256 indexed requestId);
+    event WinnerPicked(address indexed winner);
 
 
     constructor(
@@ -133,6 +134,7 @@ contract Raffle is VRFConsumerBaseV2 {
         if(!success){
             revert Raffle__TransferFailed();
         }
+        emit WinnerPicked(recentWinner);
     }
 
     /* View / Pure functions */
