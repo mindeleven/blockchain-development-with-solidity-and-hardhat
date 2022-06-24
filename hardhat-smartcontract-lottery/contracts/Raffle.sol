@@ -19,6 +19,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 import "hardhat/console.sol";
 
 error Raffle__NotEnoughETHEntered();
+error Raffle__TransferFailed();
 
 contract Raffle is VRFConsumerBaseV2 {
 
@@ -116,7 +117,7 @@ contract Raffle is VRFConsumerBaseV2 {
     }
 
     function fulfillRandomWords(
-      uint256 requestId, 
+      uint256 /* requestId */, 
       uint256[] memory randomWords
     ) internal override {
         // override
@@ -126,6 +127,12 @@ contract Raffle is VRFConsumerBaseV2 {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
+        // sending money to the recent winner
+        (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        // require success
+        if(!success){
+            revert Raffle__TransferFailed();
+        }
     }
 
     /* View / Pure functions */
