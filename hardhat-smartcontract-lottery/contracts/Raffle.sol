@@ -20,8 +20,16 @@ import "hardhat/console.sol";
 
 error Raffle__NotEnoughETHEntered();
 error Raffle__TransferFailed();
+error Raffle__NotOpen();
 
 contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
+    /* Type declarations */
+    // Enums can be used to create custom types with a finite set of 'constant values'
+    // https://docs.soliditylang.org/en/v0.8.14/types.html#enums
+    enum RaffleState { 
+        OPEN,
+        CALCULATING
+    }
 
     /*** state variables ***/
     // set minimum price to enter enterRaffle
@@ -58,6 +66,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     // Lottery Variables
     address private s_recentWinner;
+    RaffleState private s_raffleState; 
+
 
     /*** Events ***/
     // convention: name events with the function name reversed
@@ -78,6 +88,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         i_gasLane = gasLane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
+        s_raffleState = RaffleState.OPEN;
     }
 
     // (1) Enter the lottery by paying some amount
@@ -87,6 +98,10 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // see https://blog.soliditylang.org/2021/04/21/custom-errors/
         if (msg.value < i_entranceFee) {
             revert Raffle__NotEnoughETHEntered();
+        }
+        // checking it the lottery is open first
+        if (s_raffleState != RaffleState.OPEN) {
+            revert Raffle__NotOpen();
         }
         // msg.sender isn't a payable address
         // so it needs to be typecasted to a payable address
