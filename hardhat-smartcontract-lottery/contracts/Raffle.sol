@@ -21,7 +21,7 @@ import "hardhat/console.sol";
 error Raffle__NotEnoughETHEntered();
 error Raffle__TransferFailed();
 
-contract Raffle is VRFConsumerBaseV2 {
+contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     /*** state variables ***/
     // set minimum price to enter enterRaffle
@@ -97,6 +97,24 @@ contract Raffle is VRFConsumerBaseV2 {
         // mamed events with the function name reversed
         emit RuffleEnter(msg.sender);
     }
+    
+    /**
+     * @dev This is the function that the Chainlink Keeper nodes call
+     * they look for the 'upkeepNeeded' to return true
+     * The following should be true in order to return true:
+     * 1. Our time interval should have passed
+     * 2. The lottery should have at least one player and should have some ETH
+     * 3. Our subscription is funded with LINK
+     * 4. The lottery should be in an "open" state
+     */
+    function checkUpkeep(
+        bytes calldata /* checkData */
+    ) external view override returns (
+        bool upkeepNeeded, bytes memory /* performData */
+    ) {
+        
+    }
+
 
     // (2) Pick a random winner (verifiable random)
     // is run by the chainlink keepers network
