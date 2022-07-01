@@ -127,7 +127,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     ) external view override returns (
         bool upkeepNeeded, bytes memory /* performData */
     ) {
-        
+        // bool true if RaffleState is in an open state
+        bool isOpen = RaffleState.OPEN == s_raffleState;
     }
 
 
@@ -139,6 +140,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // (2) do something with the random number
         // it's a two transaction process that has the advantage
         // of preventing brute force attacks from manipulating the lottery
+        // set Raffle to CALCULATING while winner is picked
+        s_raffleState = RaffleState.CALCULATING;
         uint256 requestId = i_vfrCoordinator.requestRandomWords(
             i_gasLane, //keyHash
             i_subscriptionId,
@@ -161,6 +164,10 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
+        // set Raffle to OPEN again after winner has been picked
+        s_raffleState = RaffleState.OPEN;
+        // list of participants needs to be reset to empty
+        s_players = new address payable[](0);
         // sending money to the recent winner
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         // require success
