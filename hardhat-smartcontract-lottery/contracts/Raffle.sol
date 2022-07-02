@@ -67,6 +67,10 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // Lottery Variables
     address private s_recentWinner;
     RaffleState private s_raffleState; 
+    // keep track of last time winner has been picked
+    uint256 private s_lastTimeStamp;
+    // interval between times a winner is picked
+    uint256 private immutable i_interval;
 
 
     /*** Events ***/
@@ -81,7 +85,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         uint256 entranceFee,
         bytes32 gasLane,
         uint64 subscriptionId,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        uint256 interval
     ) VRFConsumerBaseV2(vrfCoordinatorV2) {
         i_entranceFee = entranceFee;
         i_vfrCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
@@ -89,6 +94,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
         s_raffleState = RaffleState.OPEN;
+        s_lastTimeStamp = block.timestamp;
+        i_interval = interval;
     }
 
     // (1) Enter the lottery by paying some amount
@@ -128,7 +135,13 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         bool upkeepNeeded, bytes memory /* performData */
     ) {
         // bool true if RaffleState is in an open state
-        bool isOpen = RaffleState.OPEN == s_raffleState;
+        bool isOpen = (RaffleState.OPEN == s_raffleState);
+        // block.timestamp is globally available in Solidity
+        // returns current timestamp of the blockchain
+        // to tell if enough time has passed we need 
+        // current timestamp minus last timestamp
+        // (block.timestamp - last block timestamp) > interval
+        bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
     }
 
 
