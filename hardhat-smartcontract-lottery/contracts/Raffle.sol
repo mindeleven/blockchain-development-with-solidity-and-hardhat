@@ -151,19 +151,14 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
     }
     
+    // (2) Pick a random winner (verifiable random)
+    // is run by the chainlink keepers network
+    // external functions are cheaper than public functions
     // once checkUpkeep returns true the chainlink keepers will 
     // automatically call perform upkeep
     function performUpkeep(
         bytes calldata /* performData */
     ) external override {
-
-
-    }
-
-    // (2) Pick a random winner (verifiable random)
-    // is run by the chainlink keepers network
-    // external functions are cheaper than public functions
-    function requestRandomWinner() external {
         // (1) request the random number
         // (2) do something with the random number
         // it's a two transaction process that has the advantage
