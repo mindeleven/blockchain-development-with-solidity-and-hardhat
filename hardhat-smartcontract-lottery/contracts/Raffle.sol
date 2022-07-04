@@ -230,6 +230,11 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     /** View / Pure functions */
     /** Getter Functions */
+
+    function getRaffleState() public view returns (RaffleState) {
+        return s_raffleState;
+    }
+    
     // all users should be able to see the entrance fee
     function getEntranceFee() public view returns(uint256) {
         return i_entranceFee;
