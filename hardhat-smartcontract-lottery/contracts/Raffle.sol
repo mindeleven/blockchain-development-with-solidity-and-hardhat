@@ -132,7 +132,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function checkUpkeep(
         bytes calldata /* checkData */
     ) external view override returns (
-        bool upkeepNeeded, bytes memory /* performData */
+        bool upkeepNeeded, 
+        bytes memory /* performData */
     ) {
         // bool true if RaffleState is in an open state
         bool isOpen = (RaffleState.OPEN == s_raffleState);
@@ -149,7 +150,15 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // return true if all checks turn out true
         upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
     }
+    
+    // once checkUpkeep returns true the chainlink keepers will 
+    // automatically call perform upkeep
+    function performUpkeep(
+        bytes calldata /* performData */
+    ) external override {
 
+
+    }
 
     // (2) Pick a random winner (verifiable random)
     // is run by the chainlink keepers network
