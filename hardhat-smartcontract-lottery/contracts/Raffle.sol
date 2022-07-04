@@ -27,6 +27,11 @@ error Raffle__UpkeepNotNeeded(
     uint256 raffleState
 );
 
+/** @title A sample Raffle Contract
+ *  @author Jürgen Kober, working along with Patrick Collins' instructions
+ *  @notice This contract is for creating a sample raffle contract
+ *  @dev This implements the Chainlink VRF Version 2
+ */
 contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     /* Type declarations */
     // Enums can be used to create custom types with a finite set of 'constant values'
@@ -84,7 +89,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     event RequestedRaffleWinner(uint256 indexed requestId);
     event WinnerPicked(address indexed winner);
 
-
+    /* Functions */
     constructor(
         address vrfCoordinatorV2, 
         uint256 entranceFee,
@@ -135,10 +140,10 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
      * 4. The lottery should be in an "open" state
      */
     function checkUpkeep(
-        bytes calldata /* checkData */
+        bytes memory /* checkData */
     ) public view override returns (
         bool upkeepNeeded, 
-        bytes memory /* performData */
+        bytes memory performData
     ) {
         // bool true if RaffleState is in an open state
         bool isOpen = (RaffleState.OPEN == s_raffleState);
@@ -154,6 +159,13 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         bool hasBalance = address(this).balance > 0;
         // return true if all checks turn out true
         upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
+        performData = "";
+        // return parameter performData is commented out in example code at
+        // https://github.com/PatrickAlphaC/hardhat-smartcontract-lottery-fcc/blob/main/contracts/Raffle.sol
+        // this leads to the warning 
+        // "Warning: Unnamed return variable can remain unassigned. Add an explicit 
+        // return with value to all non-reverting code paths or name the variable."
+        // therefore I removed the comments and declared it here
     }
     
     // (2) Pick a random winner (verifiable random)
@@ -205,6 +217,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         s_raffleState = RaffleState.OPEN;
         // list of participants needs to be reset to empty
         s_players = new address payable[](0);
+        // resetting the timestamp after a winner has been picked
+        s_lastTimeStamp = block.timestamp;
         // sending money to the recent winner
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         // require success
@@ -214,7 +228,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         emit WinnerPicked(recentWinner);
     }
 
-    /* View / Pure functions */
+    /** View / Pure functions */
+    /** Getter Functions */
     // all users should be able to see the entrance fee
     function getEntranceFee() public view returns(uint256) {
         return i_entranceFee;
