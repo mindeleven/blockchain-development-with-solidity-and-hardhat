@@ -142,6 +142,12 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // current timestamp minus last timestamp
         // (block.timestamp - last block timestamp) > interval
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
+        // does the lottery have enough players?
+        bool hasPlayers = (s_players.length > 0);
+        // do we have a balance?
+        bool hasBalance = address(this).balance > 0;
+        // return true if all checks turn out true
+        upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
     }
 
 
