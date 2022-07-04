@@ -131,7 +131,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
      */
     function checkUpkeep(
         bytes calldata /* checkData */
-    ) external view override returns (
+    ) public view override returns (
         bool upkeepNeeded, 
         bytes memory /* performData */
     ) {
