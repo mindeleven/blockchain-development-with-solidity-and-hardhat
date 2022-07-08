@@ -33,7 +33,7 @@ module.exports = {
       },
   },
   solidity: "0.8.7",
-  getNamedAccounts: {
+  namedAccounts: {
     deployer: {
       default: 0,
     },
