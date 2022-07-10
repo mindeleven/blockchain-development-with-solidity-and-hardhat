@@ -8,7 +8,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
         let raffle, vrfCoordinatorV2Mock
 
         beforeEach(async function(){
-            const deployer = await getNamedAccounts()
+            const { deployer } = await getNamedAccounts()
             // deploys modules with the tags "mocks", "raffle" and "all"
             await deployments.fixture(["all"])
             // get a new connection to the Raffle contract
