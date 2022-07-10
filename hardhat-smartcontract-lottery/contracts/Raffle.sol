@@ -36,7 +36,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     /* Type declarations */
     // Enums can be used to create custom types with a finite set of 'constant values'
     // https://docs.soliditylang.org/en/v0.8.14/types.html#enums
-    enum RaffleState { 
+    enum RaffleState {
         OPEN,
         CALCULATING
     }
@@ -54,29 +54,29 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // integrate VRFCoordinatorV2Interface
     VRFCoordinatorV2Interface private immutable i_vfrCoordinator;
     // from https://docs.chain.link/docs/get-a-random-number/
-    // bytes32 keyHash: The gas lane key hash value, which is the maximum gas price you 
-    // are willing to pay for a request in wei. It functions as an ID of the off-chain VRF job 
+    // bytes32 keyHash: The gas lane key hash value, which is the maximum gas price you
+    // are willing to pay for a request in wei. It functions as an ID of the off-chain VRF job
     // that runs in response to requests
     bytes32 private immutable i_gasLane;
     // the subscription ID that this contract uses for funding requests
     uint64 private immutable i_subscriptionId;
-    // uint16 requestConfirmations: How many confirmations the Chainlink node should wait 
-    // before responding. The longer the node waits, the more secure the random value is. 
-    // It must be greater than the minimumRequestBlockConfirmations limit on the coordinator 
+    // uint16 requestConfirmations: How many confirmations the Chainlink node should wait
+    // before responding. The longer the node waits, the more secure the random value is.
+    // It must be greater than the minimumRequestBlockConfirmations limit on the coordinator
     // contract.
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
-    // uint32 callbackGasLimit: The limit for how much gas to use for the callback request to 
-    // your contract's fulfillRandomWords() function. It must be less than the maxGasLimit 
+    // uint32 callbackGasLimit: The limit for how much gas to use for the callback request to
+    // your contract's fulfillRandomWords() function. It must be less than the maxGasLimit
     // limit on the coordinator contract.
     uint32 private immutable i_callbackGasLimit;
-    // uint32 numWords: How many random values to request. If you can use several random 
-    // values in a single callback, you can reduce the amount of gas that you spend 
+    // uint32 numWords: How many random values to request. If you can use several random
+    // values in a single callback, you can reduce the amount of gas that you spend
     // per random value.
     uint16 private constant NUM_WORDS = 1;
 
     // Lottery Variables
     address private s_recentWinner;
-    RaffleState private s_raffleState; 
+    RaffleState private s_raffleState;
     // keep track of last time winner has been picked
     uint256 private s_lastTimeStamp;
     // interval between times a winner is picked
@@ -91,7 +91,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     /* Functions */
     constructor(
-        address vrfCoordinatorV2, 
+        address vrfCoordinatorV2,
         uint256 entranceFee,
         bytes32 gasLane,
         uint64 subscriptionId,
@@ -129,7 +129,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // mamed events with the function name reversed
         emit RuffleEnter(msg.sender);
     }
-    
+
     /**
      * @dev This is the function that the Chainlink Keeper nodes call
      * they look for the 'upkeepNeeded' to return true
@@ -142,14 +142,14 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function checkUpkeep(
         bytes memory /* checkData */
     ) public view override returns (
-        bool upkeepNeeded, 
+        bool upkeepNeeded,
         bytes memory performData
     ) {
         // bool true if RaffleState is in an open state
         bool isOpen = (RaffleState.OPEN == s_raffleState);
         // block.timestamp is globally available in Solidity
         // returns current timestamp of the blockchain
-        // to tell if enough time has passed we need 
+        // to tell if enough time has passed we need
         // current timestamp minus last timestamp
         // (block.timestamp - last block timestamp) > interval
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
@@ -162,16 +162,16 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         performData = "";
         // return parameter performData is commented out in example code at
         // https://github.com/PatrickAlphaC/hardhat-smartcontract-lottery-fcc/blob/main/contracts/Raffle.sol
-        // this leads to the warning 
-        // "Warning: Unnamed return variable can remain unassigned. Add an explicit 
+        // this leads to the warning
+        // "Warning: Unnamed return variable can remain unassigned. Add an explicit
         // return with value to all non-reverting code paths or name the variable."
         // therefore I removed the comments and declared it here
     }
-    
+
     // (2) Pick a random winner (verifiable random)
     // is run by the chainlink keepers network
     // external functions are cheaper than public functions
-    // once checkUpkeep returns true the chainlink keepers will 
+    // once checkUpkeep returns true the chainlink keepers will
     // automatically call perform upkeep
     function performUpkeep(
         bytes calldata /* performData */
@@ -203,7 +203,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     }
 
     function fulfillRandomWords(
-      uint256 /* requestId */, 
+      uint256 /* requestId */,
       uint256[] memory randomWords
     ) internal override {
         // override
@@ -234,13 +234,13 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function getRaffleState() public view returns (RaffleState) {
         return s_raffleState;
     }
-    
-    // needs to be a pure, not view function 
+
+    // needs to be a pure, not view function
     // because it doesn't read in storage
     function getNumWords() public pure returns (uint256) {
         return NUM_WORDS;
     }
-    
+
     // all users should be able to see the entrance fee
     function getEntranceFee() public view returns(uint256) {
         return i_entranceFee;
@@ -261,5 +261,9 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     function getRequestConfirmations() public pure returns (uint256) {
         return REQUEST_CONFIRMATIONS;
+    }
+
+    function getInterval() public view returns (uint256) {
+        return i_interval;
     }
 }
