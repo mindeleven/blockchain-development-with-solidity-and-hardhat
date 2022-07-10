@@ -28,7 +28,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 assert.equal(raffleState, "0")
                 assert.equal(
                     interval.toString(),
-                    networkConfig[network.config.chainId]["keepersUpdateInterval"]
+                    networkConfig[network.config.chainId]["interval"]
                 )
             })
         })
