@@ -5,10 +5,11 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 !developmentChains.includes(network.name)
     ? describe.skip
     : describe("Raffle Unit Tests", async function () {
-        let raffle, vrfCoordinatorV2Mock
+        let raffle, vrfCoordinatorV2Mock, raffleEntranceFee, interval, deployer
 
         beforeEach(async function(){
-            const { deployer } = await getNamedAccounts()
+            const deployer = (await getNamedAccounts()).deployer
+            // console.log("deployer: ", deployer)
             // deploys modules with the tags "mocks", "raffle" and "all"
             await deployments.fixture(["all"])
             // get a new connection to the Raffle contract
@@ -16,6 +17,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
             raffle = await ethers.getContract("Raffle", deployer)
             // get a new connection to the VRFCoordinatorV2Mock contract
             vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock", deployer)
+            raffleEntranceFee = await raffle.getEntranceFee()
         })
 
         describe("constructor", async function () {
@@ -35,10 +37,17 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 
         describe("enterRaffle", function () {
             it("reverts when you don't pay enough", async () => {
-                  await expect(raffle.enterRaffle()).to.be.revertedWith(
-                      // is reverted when not paid enough or raffle is not open
-                      "Raffle__NotEnoughETHEntered"
-                  )
+                await expect(raffle.enterRaffle()).to.be.revertedWith(
+                    // is reverted when not paid enough or raffle is not open
+                    "Raffle__NotEnoughETHEntered"
+                )
+            })
+
+            it("records player when they enter", async () => {
+                await raffle.enterRaffle({ value: raffleEntranceFee })
+                const playerFromContract = await raffle.getPlayer(0)
+                // console.log(playerFromContract)
+                assert.equal(deployer, playerFromContract.address)
             })
         })
     })
