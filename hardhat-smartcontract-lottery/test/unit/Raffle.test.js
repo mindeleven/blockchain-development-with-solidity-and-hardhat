@@ -32,4 +32,13 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 )
             })
         })
+
+        describe("enterRaffle", function () {
+            it("reverts when you don't pay enough", async () => {
+                  await expect(raffle.enterRaffle()).to.be.revertedWith(
+                      // is reverted when not paid enough or raffle is not open
+                      "Raffle__NotEnoughETHEntered"
+                  )
+            })
+        })
     })
