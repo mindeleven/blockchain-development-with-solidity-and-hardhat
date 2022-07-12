@@ -18,6 +18,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
             // get a new connection to the VRFCoordinatorV2Mock contract
             vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock", deployer)
             raffleEntranceFee = await raffle.getEntranceFee()
+            interval = await raffle.getInterval()
         })
 
         describe("constructor", async function () {
@@ -59,6 +60,28 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 })).to.emit(
                     raffle,
                     "RaffleEnter"
+                )
+            })
+
+            it("doesn't allow entrance when raffle is calculating", async () => {
+                await raffle.enterRaffle({ value: raffleEntranceFee })
+                // for a documentation of the methods below,
+                // go here: https://hardhat.org/hardhat-network/reference
+                // https://hardhat.org/hardhat-network/docs/reference#hardhat-network-methods
+
+                // we increase time of blockchain and mine a block to move forward
+                // evm_increaseTime allows us to increase the time of our blockchain
+                await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+                // evm_mine allows us to create new blocks
+                await network.provider.request({ method: "evm_mine", params: [] })
+
+                // we pretend to be a keeper for a second
+                // changes the state to calculating for our comparison below
+                await raffle.performUpkeep([])
+                await expect(raffle.enterRaffle({
+                    value: raffleEntranceFee
+                })).to.be.revertedWith( // is reverted as raffle is calculating
+                    "Raffle__NotOpen"
                 )
             })
         })
