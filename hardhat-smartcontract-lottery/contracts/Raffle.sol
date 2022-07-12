@@ -85,7 +85,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     /*** Events ***/
     // convention: name events with the function name reversed
-    event RuffleEnter(address indexed player);
+    event RaffleEnter(address indexed player);
     event RequestedRaffleWinner(uint256 indexed requestId);
     event WinnerPicked(address indexed winner);
 
@@ -127,7 +127,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // when a dynamic array or mapping is updated
         // we always want to emit an event
         // mamed events with the function name reversed
-        emit RuffleEnter(msg.sender);
+        emit RaffleEnter(msg.sender);
     }
 
     /**
