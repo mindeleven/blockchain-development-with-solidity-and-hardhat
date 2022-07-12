@@ -85,4 +85,16 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 )
             })
         })
+
+        describe("checkUpkeep", function () {
+            it("returns false if people haven't sent any ETH", async () => {
+                await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+                await network.provider.request({ method: "evm_mine", params: [] })
+                // upkeepNeeded = (timePassed && isOpen && hasBalance && hasPlayers)
+                // callStatic simulates sending a transaction
+                const { upkeepNeeded } = await raffle.callStatic.checkUpkeep("0x")
+                assert(!upkeepNeeded)
+            })
+        })
+
     })
