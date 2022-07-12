@@ -49,5 +49,17 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 // console.log(playerFromContract)
                 assert.equal(deployer, playerFromContract.address)
             })
+
+            // see https://ethereum-waffle.readthedocs.io/en/latest/matchers.html
+            // "Emitting events" section
+            it("emits event on enter", async () => {
+                // emits RaffleEnter event if entered to index player(s) address
+                await expect(raffle.enterRaffle({
+                    value: raffleEntranceFee
+                })).to.emit(
+                    raffle,
+                    "RaffleEnter"
+                )
+            })
         })
     })
