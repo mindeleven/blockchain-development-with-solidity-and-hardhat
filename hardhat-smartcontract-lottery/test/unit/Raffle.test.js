@@ -137,6 +137,12 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 const tx = await raffle.performUpkeep("0x")
                 assert(tx)
             })
+
+            it("reverts if checkup is false", async () => {
+                await expect(raffle.performUpkeep("0x")).to.be.revertedWith(
+                    "Raffle__UpkeepNotNeeded"
+                )
+            })
         })
 
     })
