@@ -202,19 +202,19 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     // setting listener before event gets fired
                     raffle.once("WinnerPicked", async () => { // event listener for WinnerPicked
                           // console.log("WinnerPicked event fired!")
+                          // below we will fire the event,
+                          // and the listener will pick it up,
+                          // and resolve
+                          try {
+                              //
+                          } catch (e) {
+                              reject(e)
+                          }
                           resolve()
                     })
                     // mocha.timeout in hardhat.config
                     // if event won't get fired within 200 seconds it will time out
 
-                    // below we will fire the event,
-                    // and the listener will pick it up,
-                    // and resolve
-                    try {
-                        //
-                    } catch (e) {
-                        reject(e)
-                    }
                 })
 
             })
