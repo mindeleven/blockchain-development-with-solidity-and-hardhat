@@ -196,6 +196,20 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 
                 // performUpkeep (mock being Chainlink Keepers)
                 // fulfillRandomWords (mock being the Chainlink VRF)
+                // we will have to wait for the fulFillRandomWords to be called
+                await new Promise(async (resolve, reject) => {
+                    // listen for the WinnerPicked event
+                    // setting listener before event gets fired
+                    raffle.once("WinnerPicked", async () => { // event listener for WinnerPicked
+                          // console.log("WinnerPicked event fired!")
+                          resolve()
+                    })
+
+                    // mocha.timeout in hardhat.config
+                    // if event won't get fired within 200 seconds it will time out
+
+
+                })
 
             })
 
