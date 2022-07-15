@@ -163,6 +163,17 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
                 await network.provider.request({ method: "evm_mine", params: [] })
             })
+
+            it("can only be called after performupkeep", async () => {
+                await expect(
+                    // revert if not fulfilled
+                    vrfCoordinatorV2Mock.fulfillRandomWords(0, raffle.address)
+                ).to.be.revertedWith("nonexistent request")
+                await expect(
+                    // revert if not fulfilled
+                    vrfCoordinatorV2Mock.fulfillRandomWords(1, raffle.address)
+                ).to.be.revertedWith("nonexistent request")
+            })
         })
 
     })
