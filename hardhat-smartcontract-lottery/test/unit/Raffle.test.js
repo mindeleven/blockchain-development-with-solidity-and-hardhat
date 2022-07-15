@@ -215,9 +215,8 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                               assert.equal(numPlayers.toString(), "0")
                               // assert that the raffle state has been set back to open
                               assert.equal(raffleState.toString(), "0")
-
-
-                              // await expect(raffle.getPlayer(0)).to.be.reverted
+                              // make sure last timestamp has been updated
+                              assert(endingTimeStamp > startingTimeStamp)
                           } catch (e) {
                               reject(e)
                           }
