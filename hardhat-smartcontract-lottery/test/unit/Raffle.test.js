@@ -143,6 +143,18 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     "Raffle__UpkeepNotNeeded"
                 )
             })
+
+            it("updates the raffle state, emits an event, and calls the vrf coordinator", async () => {
+                await raffle.enterRaffle({ value: raffleEntranceFee })
+                await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+                await network.provider.request({ method: "evm_mine", params: [] })
+                const txResponse = await raffle.performUpkeep("0x") // emits requestId
+                const txReceipt = await txResponse.wait(1) // waits 1 block
+                const requestId = txReceipt.events[1].args.requestId
+                const raffleState = await raffle.getRaffleState() // updates state
+                assert(requestId.toNumber() > 0)
+                assert(raffleState.toString() == "1") // 0 = open, 1 = calculating
+            })
         })
 
     })
