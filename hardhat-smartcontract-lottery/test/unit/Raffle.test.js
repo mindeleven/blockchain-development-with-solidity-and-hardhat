@@ -174,6 +174,28 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     vrfCoordinatorV2Mock.fulfillRandomWords(1, raffle.address)
                 ).to.be.revertedWith("nonexistent request")
             })
+
+            // this is going to be a test that's way to big
+            it("picks a winner, resets, and sends money", async () => {
+                // adding additional people who enter the lottery
+                const additionalEntrances = 3
+                const startingAccountIndex = 1 // deployer = 0
+                const accounts = await ethers.getSigners()
+                // connect raffle contract to new accounts
+                for (
+                    let i = startingAccountIndex;
+                    i < startingAccountIndex + additionalEntrances;
+                    i++
+                ) { // i = 2; i < 5; i=i+1
+                    const accountConnectedRaffle = raffle.connect(accounts[i]) // Returns a new instance of the Raffle contract connected to player
+                    await accountConnectedRaffle.enterRaffle({ value: raffleEntranceFee })
+                }
+
+                // store starting timestamp (before we fire our event)
+                const startingTimeStamp = await raffle.getLastTimeStamp() 
+
+            })
+
         })
 
     })
