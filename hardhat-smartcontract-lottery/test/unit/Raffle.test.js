@@ -157,4 +157,12 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
             })
         })
 
+        describe("fulfillRandomWords", function () {
+            beforeEach(async () => {
+                await raffle.enterRaffle({ value: raffleEntranceFee })
+                await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+                await network.provider.request({ method: "evm_mine", params: [] })
+            })
+        })
+
     })
