@@ -201,9 +201,23 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     // listen for the WinnerPicked event
                     // setting listener before event gets fired
                     raffle.once("WinnerPicked", async () => { // event listener for WinnerPicked
-                          // console.log("WinnerPicked event fired!")
+                          // console.log once the event gets fired
+                          // see below when fired
+                          console.log("WinnerPicked event fired!")
                           try {
-                              //
+                              // checking if everything in the raffle is set correctly
+                              const recentWinner = await raffle.getRecentWinner()
+                              const raffleState = await raffle.getRaffleState()
+                              // const winnerBalance = await accounts[2].getBalance()
+                              const endingTimeStamp = await raffle.getLastTimeStamp()
+                              // assert that players array has been set to 0
+                              const numPlayers = await raffle.getNumberOfPlayers()
+                              assert.equal(numPlayers.toString(), "0")
+                              // assert that the raffle state has been set back to open
+                              assert.equal(raffleState.toString(), "0")
+
+
+                              // await expect(raffle.getPlayer(0)).to.be.reverted
                           } catch (e) {
                               reject(e)
                           }
@@ -218,6 +232,8 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     const tx = await raffle.performUpkeep("0x")
                     const txReceipt = await tx.wait(1)
                     const startingBalance = await accounts[2].getBalance()
+                    // once this function gets called it should emit a WinnerPicked event
+                    // this is the event that the raffle above is listening for
                     await vrfCoordinatorV2Mock.fulfillRandomWords(
                         txReceipt.events[1].args.requestId,
                         raffle.address
