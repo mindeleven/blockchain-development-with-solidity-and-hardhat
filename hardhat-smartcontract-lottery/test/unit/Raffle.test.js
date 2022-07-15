@@ -192,7 +192,10 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                 }
 
                 // store starting timestamp (before we fire our event)
-                const startingTimeStamp = await raffle.getLastTimeStamp() 
+                const startingTimeStamp = await raffle.getLastTimeStamp()
+
+                // performUpkeep (mock being Chainlink Keepers)
+                // fulfillRandomWords (mock being the Chainlink VRF)
 
             })
 
