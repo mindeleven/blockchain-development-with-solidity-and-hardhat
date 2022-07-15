@@ -204,11 +204,17 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                           // console.log("WinnerPicked event fired!")
                           resolve()
                     })
-
                     // mocha.timeout in hardhat.config
                     // if event won't get fired within 200 seconds it will time out
 
-
+                    // below we will fire the event,
+                    // and the listener will pick it up,
+                    // and resolve
+                    try {
+                        //
+                    } catch (e) {
+                        reject(e)
+                    }
                 })
 
             })
