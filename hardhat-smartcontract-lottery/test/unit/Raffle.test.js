@@ -212,11 +212,26 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                               const endingTimeStamp = await raffle.getLastTimeStamp()
                               // assert that players array has been set to 0
                               const numPlayers = await raffle.getNumberOfPlayers()
+                              winnerEndingBalance = await accounts[1].getBalance()
                               assert.equal(numPlayers.toString(), "0")
                               // assert that the raffle state has been set back to open
                               assert.equal(raffleState.toString(), "0")
                               // make sure last timestamp has been updated
                               assert(endingTimeStamp > startingTimeStamp)
+
+                              // make sure that the winner got paid
+                              // winner should end up with balance that everybody else paid to this contract
+                              assert.equal(
+                                  winnerEndingBalance.toString(),
+                                  winnerStartingBalance
+                                  // startingBalance + ( (raffleEntranceFee * additionalEntrances) + raffleEntranceFee )
+                                      .add(
+                                          raffleEntranceFee
+                                              .mul(additionalEntrances)
+                                              .add(raffleEntranceFee)
+                                      )
+                                      .toString()
+                              )
                           } catch (e) {
                               reject(e)
                           }
@@ -230,7 +245,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     // and resolve
                     const tx = await raffle.performUpkeep("0x")
                     const txReceipt = await tx.wait(1)
-                    const startingBalance = await accounts[2].getBalance()
+                    const winnerStartingBalance = await accounts[1].getBalance()
                     // once this function gets called it should emit a WinnerPicked event
                     // this is the event that the raffle above is listening for
                     await vrfCoordinatorV2Mock.fulfillRandomWords(
