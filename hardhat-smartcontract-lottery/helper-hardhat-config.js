@@ -9,7 +9,7 @@ const networkConfig = {
         // subscription id from https://vrf.chain.link/
         subscriptionId: "6726",
         gasLane: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
-        // keepersUpdateInterval: "30",
+        keepersUpdateInterval: "30",
         callbackGasLimit: "500000", // 500,000 gas
         interval: "30"
     },
@@ -26,8 +26,11 @@ const networkConfig = {
 }
 
 const developmentChains = ["hardhat", "localhost"]
+const VERIFICATION_BLOCK_CONFIRMATIONS = 6
+
 
 module.exports = {
     networkConfig,
     developmentChains,
+    VERIFICATION_BLOCK_CONFIRMATIONS,
 }

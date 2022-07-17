@@ -9,9 +9,9 @@ require("hardhat-contract-sizer")
 require("dotenv").config()
 
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL
-// const PRIVATE_KEY = process.env.PRIVATE_KEY
+const PRIVATE_KEY = process.env.PRIVATE_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-// const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
 const REPORT_GAS = process.env.REPORT_GAS || false
 
 module.exports = {
@@ -30,7 +30,14 @@ module.exports = {
             saveDeployments: true,
             chainId: 4,
             // blockConfirmations = 6,
-            accounts: [process.env.pk], // accounts: [PRIVATE_KEY]
+            //accounts: [process.env.pk], //
+            accounts: [PRIVATE_KEY],
+      },
+  },
+  etherscan: {
+      // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
+      apiKey: {
+          rinkeby: ETHERSCAN_API_KEY,
       },
   },
   gasReporter: {
@@ -39,6 +46,10 @@ module.exports = {
       outputFile: "gas-report.txt",
       noColors: true,
       // coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+  },
+  contractSizer: {
+      runOnCompile: false,
+      only: ["Raffle"],
   },
   solidity: "0.8.7",
   namedAccounts: {
@@ -50,6 +61,6 @@ module.exports = {
     }
   },
   mocha: {
-    timeout: 200000, // 200 seconds max 
+    timeout: 200000, // 200 seconds max
   }
 };
