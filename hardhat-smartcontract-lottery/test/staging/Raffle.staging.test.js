@@ -60,7 +60,5 @@ developmentChains.includes(network.name)
                       // finished listening
                   })
               })
-
-
         })
     })
