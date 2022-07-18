@@ -6,6 +6,7 @@ const { run } = require("hardhat")
 const verify = async (contractAddress, args) => {
     console.log("Verifying contract...")
     try {
+        console.log("We're trying to verify... with " + contractAddress + "and" + args)
         await run("verify:verify", {
             address: contractAddress,
             constructorArguments: args,
