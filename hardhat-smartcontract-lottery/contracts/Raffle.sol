@@ -128,6 +128,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // we always want to emit an event
         // mamed events with the function name reversed
         emit RaffleEnter(msg.sender);
+        console.log("Raffle entered");
     }
 
     /**
@@ -177,6 +178,9 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         bytes calldata /* performData */
     ) external override {
         // checking requirements if a winner can/should be picked
+        /****/
+        // following part removed as suggested by sanjayojha
+        // at https://github.com/smartcontractkit/full-blockchain-solidity-course-js/discussions/729
         (bool upkeepNeeded, ) = checkUpkeep("");
         if (!upkeepNeeded) {
             revert Raffle__UpkeepNotNeeded(
@@ -185,6 +189,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
                 uint256(s_raffleState)
             );
         }
+        /****/
         // (1) request the random number
         // (2) do something with the random number
         // it's a two transaction process that has the advantage
